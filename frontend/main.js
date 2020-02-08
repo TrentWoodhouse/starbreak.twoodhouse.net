@@ -2,8 +2,6 @@ let canvas = document.getElementById('canvas');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-import * as THREE from '/three.js-master/build/three.js';
-
 
 let wsUrl = 'ws://localhost:1337';
 
@@ -14,7 +12,15 @@ websocket.onopen = function (event) {
 };
 
 websocket.onmessage = function (message) {
-    console.log(JSON.parse(message.data));
+    let data = JSON.parse(message.data);
+    switch (data.label) {
+        case 'playerConfig':
+            console.log(`Player id is set to ${data.data.id}`);
+            break;
+        case 'state':
+            console.log('State information received');
+            break;
+    }
 };
 
 websocket.onerror = function (err){

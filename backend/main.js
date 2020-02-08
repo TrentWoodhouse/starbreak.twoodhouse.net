@@ -32,6 +32,7 @@ let wss = new webSocketServer({
 
 // Game State
 let state = {
+    label: 'state',
     players: [],
     objects: [],
     messages: [],
@@ -49,8 +50,9 @@ wss.on('request', function(request) {
     
     let connection = request.accept(null, request.origin);
     let id = idCounter++;
-    state.players.push(models.makePlayer(id));
-
+    let player = models.makePlayer(id);
+    state.players.push(player);
+    sendServerMessage('playerConfig', player);
     log(`Player ${id} connected (${state.players.length}/${logic.MAX_PLAYERS})`);
 
     connection.on('message', function(message) {
@@ -66,6 +68,13 @@ wss.on('request', function(request) {
 
         log(`Player ${id} disconnected (${state.players.length}/${logic.MAX_PLAYERS})`);
     });
+
+    function sendServerMessage(label, data) {
+        connection.send(JSON.stringify({
+            label: label,
+            data: data
+        }));
+    }
 });
 
 setInterval(function() {
