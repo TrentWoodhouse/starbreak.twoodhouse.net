@@ -137,7 +137,7 @@
 				} );
 				gui.add( params, 'scale', 1, 10 ).onChange( function ( value ) {
 
-					water.material.uniforms[ 'config' ].value.w = value;
+					water.material.uniforms[ 'config.js' ].value.w = value;
 
 				} );
 				gui.add( params, 'flowX', - 1, 1 ).step( 0.01 ).onChange( function ( value ) {

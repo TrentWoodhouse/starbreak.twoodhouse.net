@@ -1,6 +1,7 @@
 import * as LOGIC from '/js/logic.js';
+import CONFIG from './config.js';
 
-let wsUrl = 'ws://localhost:1337';
+let wsUrl = CONFIG.serverHost + ':' + CONFIG.serverPort;
 
 let websocket = new WebSocket(wsUrl);
 let interval;
