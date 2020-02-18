@@ -32,41 +32,49 @@ let wss = new webSocketServer({
 
 // Game State
 let state = {
-    label: 'state',
-    players: [],
-    objects: [],
-    messages: [],
+    idCounter: 0,
+    userInputs: {},
+    data: {
+        label: 'state',
+        players: {
+            'size': 0,
+        },
+        objects: {
+            'size': 0,
+        },
+        messages: [],
+    }
 };
-
-let idCounter = 0;
 
 // WebSocket server
 wss.on('request', function(request) {
     //TODO Add origin check
-    if (state.players.length >= logic.MAX_PLAYERS) {
+    if (state.data.players.size >= logic.MAX_PLAYERS) {
         request.reject();
         return;
     }
     
     let connection = request.accept(null, request.origin);
-    let id = idCounter++;
-    let player = models.makePlayer(id);
-    state.players.push(player);
+    let id = state.idCounter++;
+    let player = models.makePlayer(id, 0, 0, 10);
+    state.data.players[id] = player;
+    state.data.players.size++;
+    state.userInputs[id] = null;
     sendServerMessage('playerConfig', player);
-    log(`Player ${id} connected (${state.players.length}/${logic.MAX_PLAYERS})`);
+    log(`Player ${id} connected (${state.data.players.size}/${logic.MAX_PLAYERS})`);
 
     connection.on('message', function(message) {
         if (message.type === 'utf8') {
-            log(message);
+            let msg = JSON.parse(message.utf8Data);
+            state.userInputs[msg.id] = msg.controls;
         }
     });
 
-    connection.on('close', function(connection) {
-        state.players.splice(state.players.findIndex( function(player){
-            return player.id === id;
-        }), 1);
-
-        log(`Player ${id} disconnected (${state.players.length}/${logic.MAX_PLAYERS})`);
+    connection.on('close', function() {
+        delete state.data.players[id];
+        state.data.players.size--;
+        delete state.userInputs[id];
+        log(`Player ${id} disconnected (${state.data.players.size}/${logic.MAX_PLAYERS})`);
     });
 
     function sendServerMessage(label, data) {
@@ -78,6 +86,7 @@ wss.on('request', function(request) {
 });
 
 setInterval(function() {
-    wss.broadcast(JSON.stringify(state));
-    state = logic.update(state);
+    wss.broadcast(JSON.stringify(state.data));
+    logic.update(state);
 }, 1000 / logic.REFRESH_RATE);
+

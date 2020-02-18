@@ -22,7 +22,7 @@ class Player extends Object3D {
     constructor(id) {
         super();
         this.id = id;
-        this.type = 'player'
+        this.type = 'player';
     }
 }
 
