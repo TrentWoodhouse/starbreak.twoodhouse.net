@@ -41,9 +41,7 @@ function addCube(id, size, color) {
 }
 
 function updateCube(cube, player, isControllingPlayer) {
-    console.log('update');
     if (isControllingPlayer){
-        console.log("isPlayer");
         camera.position.x = player.position.x;
         camera.position.y = player.position.y;
         camera.position.z = player.position.z;
@@ -53,7 +51,6 @@ function updateCube(cube, player, isControllingPlayer) {
         camera.rotation.z = player.rotation.z;
     }
     else {
-        console.log("isNOTPlayer");
         cube.position.x = player.position.x;
         cube.position.y = player.position.y;
         cube.position.z = player.position.z;
