@@ -118,7 +118,7 @@ let MouseKeyboardControls = function (domElement ) {
         this.mouseYMovement = event.movementY;
         if(this.mouseLock){
             this.mouseXChange += event.movementX;
-            this.mouseYchange += event.movementY;
+            this.mouseYChange += event.movementY;
         }
     };
 

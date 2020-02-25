@@ -1,4 +1,5 @@
 {
+  "version": "0.0.1",
   "dbPort": null,
   "dbHost": null,
   "dbName": null,

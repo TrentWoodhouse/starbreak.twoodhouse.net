@@ -38,7 +38,31 @@ function addCube(id, size, color) {
     const cube = new THREE.Mesh(geometry, material);
     scene.add(cube);
     cubes[id] = cube;
-    console.log(cubes);
+}
+
+function updateCube(cube, player, isControllingPlayer) {
+    console.log('update');
+    if (isControllingPlayer){
+        console.log("isPlayer");
+        camera.position.x = player.position.x;
+        camera.position.y = player.position.y;
+        camera.position.z = player.position.z;
+
+        camera.rotation.x = player.rotation.x;
+        camera.rotation.y = player.rotation.y;
+        camera.rotation.z = player.rotation.z;
+    }
+    else {
+        console.log("isNOTPlayer");
+        cube.position.x = player.position.x;
+        cube.position.y = player.position.y;
+        cube.position.z = player.position.z;
+
+        cube.rotation.x = player.rotation.x;
+        cube.rotation.y = player.rotation.y;
+        cube.rotation.z = player.rotation.z;
+    }
+    
 }
 
 addCube('origin', .5, '#3f3');
@@ -74,29 +98,42 @@ function render(time) {
 requestAnimationFrame(render);
 
 export function update(playerId, state) {
-    for (let id in state.players) {
-        if (!isNaN(parseInt(id))) {
-            let player = state.players[id];
-            if (cubes.hasOwnProperty(player.id)) {
-                cubes[player.id].position.x = player.position.x;
-                cubes[player.id].position.y = player.position.y;
-                cubes[player.id].position.z = player.position.z;
+    let cubeIds = Object.keys(cubes).filter(function (id){
+        return !isNaN(parseInt(id));
+    });
+    let playerIds = Object.keys(state.players).filter(function (id){
+        return !isNaN(parseInt(id));
+    });
+    let i = 0;
+    let j = 0;
 
-                cubes[player.id].rotation.x = player.rotation.x;
-                cubes[player.id].rotation.y = player.rotation.y;
-                cubes[player.id].rotation.z = player.rotation.z;
-            }
-            else if (player.id !== playerId) {
-                addCube(player.id, .1, '#fff');
-            }
+    while (i < cubeIds.length && j < playerIds.length) {
+        if (cubeIds[i] < playerIds[j]){
+            scene.remove(cubes[cubeIds[i]]);
+            delete cubes[cubeIds[i]];
+            i++;
+        }
+        else if (cubeIds[i] > playerIds[j]){
+            addCube(playerIds[j], .1, '#fff');
+            updateCube(cubes[playerIds[j]], state.players[playerIds[j]], playerIds[j] == playerId);
+            j++;
+        }
+        else{
+            updateCube(cubes[cubeIds[i]], state.players[playerIds[j]], playerIds[j] == playerId);
+            i++;
+            j++;
         }
     }
-
-    camera.position.x = state.players[playerId].position.x;
-    camera.position.y = state.players[playerId].position.y;
-    camera.position.z = state.players[playerId].position.z;
-
-    camera.rotation.x = state.players[playerId].rotation.x;
-    camera.rotation.y = state.players[playerId].rotation.y;
-    camera.rotation.z = state.players[playerId].rotation.z;
+    while (i < cubeIds.length || j < playerIds.length) {
+        if (i < cubeIds.length){
+            scene.remove(cubes[cubeIds[i]]);
+            delete cubes[cubeIds[i]];
+            i++;
+        }
+        else {
+            addCube(playerIds[j], .1, '#fff');
+            updateCube(cubes[playerIds[j]], state.players[playerIds[j]], playerIds[j] == playerId);
+            j++;
+        }
+    }
 }

@@ -1,6 +1,7 @@
 let logic = {
     SCALE: .1,
     MAX_PLAYER_SPEED: 10,
+    ROTATION_SPEED: .2,
     MAX_PLAYERS: 100,
     MAX_ASTEROIDS: 20,
     FIELD_RADIUS: 500,
@@ -43,8 +44,16 @@ function step(state) {
                     player.position.z += logic.MAX_PLAYER_SPEED * Math.sin(player.rotation.y) / logic.REFRESH_RATE;
                     player.position.x -= logic.MAX_PLAYER_SPEED * Math.cos(player.rotation.y) / logic.REFRESH_RATE;
                 }
-                player.rotation.y = -.2 * controls.mouseXChange / logic.REFRESH_RATE;
+                player.rotation.y = -logic.ROTATION_SPEED * controls.mouseXChange / logic.REFRESH_RATE;
             }
+
+            // const ANGULAR_SPEED = 0.05
+            // const MOVEMENTS = {
+            //     ArrowUp:    new Quaternion().setFromAxisAngle(new Vector3(1,0,0),toRad(ANGULAR_SPEED)),
+            //     ArrowDown:  new Quaternion().setFromAxisAngle(new Vector3(1,0,0),toRad(-ANGULAR_SPEED*6)),
+            //     ArrowLeft:  new Quaternion().setFromAxisAngle(new Vector3(0,1,0),toRad(-ANGULAR_SPEED*6)),
+            //     ArrowRight: new Quaternion().setFromAxisAngle(new Vector3(0,1,0),toRad(ANGULAR_SPEED*6)),
+            // }
         }
     }
 }

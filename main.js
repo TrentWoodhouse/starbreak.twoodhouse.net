@@ -59,7 +59,10 @@ wss.on('request', function(request) {
     state.data.players[id] = player;
     state.data.players.size++;
     state.userInputs[id] = null;
-    sendServerMessage('playerConfig', player);
+    sendServerMessage('init', {
+        version: CONFIG.version,
+        player: player,
+    });
     log(`Player ${id} connected (${state.data.players.size}/${LOGIC.MAX_PLAYERS})`);
 
     connection.on('message', function(message) {

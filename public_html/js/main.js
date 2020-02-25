@@ -5,7 +5,8 @@ let wsUrl = CONFIG.serverHost + ':' + CONFIG.serverPort;
 
 let websocket = new WebSocket(wsUrl);
 let interval;
-let id = -1;
+let id;
+let version;
 
 websocket.onopen = function (event) {
     console.log('Connected to ' + wsUrl);
@@ -20,14 +21,16 @@ websocket.onopen = function (event) {
 };
 
 websocket.onmessage = function (message) {
-    let data = JSON.parse(message.data);
-    switch (data.label) {
-        case 'playerConfig':
-            id = data.data.id;
-            console.log(`Player id is set to ${data.data.id}`);
+    let JSONdata = JSON.parse(message.data);
+    switch (JSONdata.label) {
+        case 'init':
+            id = JSONdata.data.player.id;
+            version = JSONdata.data.version;
+            console.log(`Version ${version}`);
+            console.log(`Player id is set to ${id}`);
             break;
         case 'state':
-            LOGIC.update(id, data);
+            LOGIC.update(id, JSONdata);
             break;
     }
 };
