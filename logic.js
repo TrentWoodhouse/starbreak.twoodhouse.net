@@ -1,9 +1,12 @@
+let {Quaternion, Vector3, Euler} = require('three');
+
 let logic = {
     SCALE: .1,
     MAX_PLAYER_SPEED: 10,
-    ROTATION_SPEED: .2,
+    ROLL_SPEED: 2,
+    MOUSE_SENSITIVITY: .2,
     MAX_PLAYERS: 100,
-    MAX_ASTEROIDS: 20,
+    MAX_ASTEROIDS: 200,
     FIELD_RADIUS: 500,
     REFRESH_RATE: 60,
     update: function(state) {
@@ -27,33 +30,40 @@ function step(state) {
         if (!isNaN(parseInt(id))) {
             let player = state.data.players[id];
             let controls = state.userInputs[id];
+            let curQuaternion = new Quaternion(player.rotation.x, player.rotation.y, player.rotation.z, player.rotation.w);
             if (controls){
                 if(controls.upKey){
-                    player.position.z -= logic.MAX_PLAYER_SPEED * Math.cos(player.rotation.y) / logic.REFRESH_RATE;
-                    player.position.x -= logic.MAX_PLAYER_SPEED * Math.sin(player.rotation.y) / logic.REFRESH_RATE;
+                    let moveVector = new Vector3(0, 0, -logic.MAX_PLAYER_SPEED / logic.REFRESH_RATE).applyQuaternion(curQuaternion);
+                    player.position.x += moveVector.x;
+                    player.position.y += moveVector.y;
+                    player.position.z += moveVector.z;
                 }
                 if(controls.downKey){
-                    player.position.z += logic.MAX_PLAYER_SPEED * Math.cos(player.rotation.y) / logic.REFRESH_RATE;
-                    player.position.x += logic.MAX_PLAYER_SPEED * Math.sin(player.rotation.y) / logic.REFRESH_RATE;
+                    let moveVector = new Vector3(0, 0, logic.MAX_PLAYER_SPEED / logic.REFRESH_RATE).applyQuaternion(curQuaternion);
+                    player.position.x += moveVector.x;
+                    player.position.y += moveVector.y;
+                    player.position.z += moveVector.z;
                 }
                 if(controls.rightKey){
-                    player.position.z -= logic.MAX_PLAYER_SPEED * Math.sin(player.rotation.y) / logic.REFRESH_RATE;
-                    player.position.x += logic.MAX_PLAYER_SPEED * Math.cos(player.rotation.y) / logic.REFRESH_RATE;
+                    curQuaternion.multiply(new Quaternion().setFromAxisAngle(
+                        new Vector3(0,0,1), -logic.ROLL_SPEED / logic.REFRESH_RATE));
                 }
                 if(controls.leftKey){
-                    player.position.z += logic.MAX_PLAYER_SPEED * Math.sin(player.rotation.y) / logic.REFRESH_RATE;
-                    player.position.x -= logic.MAX_PLAYER_SPEED * Math.cos(player.rotation.y) / logic.REFRESH_RATE;
+                    curQuaternion.multiply(new Quaternion().setFromAxisAngle(
+                        new Vector3(0,0,1), logic.ROLL_SPEED / logic.REFRESH_RATE));
                 }
-                player.rotation.y = -logic.ROTATION_SPEED * controls.mouseXChange / logic.REFRESH_RATE;
-            }
 
-            // const ANGULAR_SPEED = 0.05
-            // const MOVEMENTS = {
-            //     ArrowUp:    new Quaternion().setFromAxisAngle(new Vector3(1,0,0),toRad(ANGULAR_SPEED)),
-            //     ArrowDown:  new Quaternion().setFromAxisAngle(new Vector3(1,0,0),toRad(-ANGULAR_SPEED*6)),
-            //     ArrowLeft:  new Quaternion().setFromAxisAngle(new Vector3(0,1,0),toRad(-ANGULAR_SPEED*6)),
-            //     ArrowRight: new Quaternion().setFromAxisAngle(new Vector3(0,1,0),toRad(ANGULAR_SPEED*6)),
-            // }
+                curQuaternion.multiply(new Quaternion().setFromAxisAngle(
+                    new Vector3(0,1,0), -logic.MOUSE_SENSITIVITY * (controls.mouseXChange - controls.mouseXChangeOld) / logic.REFRESH_RATE));
+                curQuaternion.multiply(new Quaternion().setFromAxisAngle(
+                    new Vector3(1,0,0), -logic.MOUSE_SENSITIVITY * (controls.mouseYChange - controls.mouseYChangeOld) / logic.REFRESH_RATE));
+
+                curQuaternion.normalize();
+                player.rotation.x = curQuaternion.x;
+                player.rotation.y = curQuaternion.y;
+                player.rotation.z = curQuaternion.z;
+                player.rotation.w = curQuaternion.w;
+            }
         }
     }
 }

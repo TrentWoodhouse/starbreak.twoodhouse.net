@@ -68,7 +68,11 @@ wss.on('request', function(request) {
     connection.on('message', function(message) {
         if (message.type === 'utf8') {
             let msg = JSON.parse(message.utf8Data);
+            let mouseXChangeOld = state.userInputs[msg.id] ? state.userInputs[msg.id]['mouseXChange'] : 0;
+            let mouseYChangeOld = state.userInputs[msg.id] ? state.userInputs[msg.id]['mouseYChange'] : 0;
             state.userInputs[msg.id] = msg.controls;
+            msg.controls['mouseXChangeOld'] = mouseXChangeOld;
+            msg.controls['mouseYChangeOld'] = mouseYChangeOld;
         }
     });
 

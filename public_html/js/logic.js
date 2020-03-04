@@ -1,7 +1,6 @@
 import * as VIEW from '/js/view.js';
 import {MouseKeyboardControls} from "./MouseKeyboardControls.js";
 
-let SCALE = .1;
 let MAX_PLAYER_SPEED = 10;
 export let REFRESH_RATE = 60;
 export let controls = new MouseKeyboardControls(document.querySelector('#canvas'));

@@ -8,7 +8,8 @@ class Object3D {
         this.rotation = {
             x: 0,
             y: 0,
-            z: 0
+            z: 0,
+            w: 1
         };
         this.velocity = 0;
         this.acceleration = 0;
@@ -27,7 +28,7 @@ class Player extends Object3D {
 }
 
 let models = {
-    makePlayer: function(id, x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0) {
+    makePlayer: function(id, x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0, rw = 0) {
         let p = new Player(id);
         p.position.x = x;
         p.position.y = y;
@@ -35,9 +36,10 @@ let models = {
         p.rotation.x = rx;
         p.rotation.y = ry;
         p.rotation.z = rz;
+        p.rotation.w = rw;
         return p;
     },
-    makeObject: function(type, x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0) {
+    makeObject: function(type, x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0, rw = 0) {
         let o = new Object3D();
         o.type = type;
         o.position.x = x;
@@ -46,6 +48,7 @@ let models = {
         o.rotation.x = rx;
         o.rotation.y = ry;
         o.rotation.z = rz;
+        o.rotation.w = rw;
         return o;
     }
 };

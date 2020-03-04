@@ -41,23 +41,25 @@ function addCube(id, size, color) {
 }
 
 function updateCube(cube, player, isControllingPlayer) {
+    let eulerCoords = new THREE.Euler().setFromQuaternion(
+        new THREE.Quaternion(player.rotation.x, player.rotation.y, player.rotation.z, player.rotation.w));
     if (isControllingPlayer){
         camera.position.x = player.position.x;
         camera.position.y = player.position.y;
         camera.position.z = player.position.z;
 
-        camera.rotation.x = player.rotation.x;
-        camera.rotation.y = player.rotation.y;
-        camera.rotation.z = player.rotation.z;
+        camera.rotation.x = eulerCoords.x;
+        camera.rotation.y = eulerCoords.y;
+        camera.rotation.z = eulerCoords.z;
     }
     else {
         cube.position.x = player.position.x;
         cube.position.y = player.position.y;
         cube.position.z = player.position.z;
 
-        cube.rotation.x = player.rotation.x;
-        cube.rotation.y = player.rotation.y;
-        cube.rotation.z = player.rotation.z;
+        cube.rotation.x = eulerCoords.x;
+        cube.rotation.y = eulerCoords.y;
+        cube.rotation.z = eulerCoords.z;
     }
     
 }
@@ -111,7 +113,9 @@ export function update(playerId, state) {
             i++;
         }
         else if (cubeIds[i] > playerIds[j]){
-            addCube(playerIds[j], .1, '#fff');
+            if (playerIds[j] != playerId){
+                addCube(playerIds[j], .1, '#fff');
+            }
             updateCube(cubes[playerIds[j]], state.players[playerIds[j]], playerIds[j] == playerId);
             j++;
         }
