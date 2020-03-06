@@ -1,5 +1,4 @@
 import * as THREE from '/js/three.js-master/build/three.module.js';
-//import {FirstPersonControls} from '/js/FirstPersonControls.js';
 
 const canvas = document.querySelector('#canvas');
 const renderer = new THREE.WebGLRenderer({canvas});
@@ -11,10 +10,13 @@ const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 
 const scene = new THREE.Scene();
 {
-    const color = 0xFFFFFF;
-    const intensity = 1;
-    const light = new THREE.DirectionalLight(color, intensity);
+    const light = new THREE.DirectionalLight(0xFFFFFF, .95);
     light.position.set(-1, 2, 4);
+    scene.add(light);
+}
+
+{
+    const light = new THREE.AmbientLight(0xFFFFFF, .05);
     scene.add(light);
 }
 
@@ -61,8 +63,53 @@ function updateCube(cube, player, isControllingPlayer) {
         cube.rotation.y = eulerCoords.y;
         cube.rotation.z = eulerCoords.z;
     }
-    
 }
+
+let particleSystem;
+let particlePositions = [];
+{
+    let numParticles = 70;
+    let particleSpan = 20;
+    let pGeometry = new THREE.Geometry();
+    let pMaterial = new THREE.ParticleBasicMaterial({
+        color: 0x555555,
+        size: .09,
+        map: THREE.ImageUtils.loadTexture(
+            "../img/asteroid.png"
+        ),
+        blending: THREE.AdditiveBlending
+    });
+
+    for (let i = 0; i < numParticles; i++) {
+        let v = new THREE.Vertex(
+            (Math.random() - .5) * particleSpan,
+            (Math.random() - .5) * particleSpan,
+            (Math.random() - .5) * particleSpan);
+        pGeometry.vertices.push(v);
+        particlePositions.push(v.clone());
+    }
+    particleSystem = new THREE.ParticleSystem(pGeometry, pMaterial);
+    scene.add(particleSystem);
+}
+
+function updateParticles() {
+    particleSystem.position.x = camera.position.x;
+    particleSystem.position.y = camera.position.y;
+    particleSystem.position.z = camera.position.z;
+    let vertices = particleSystem.geometry.vertices;
+    for (let i = 0; i < particlePositions.length; i++) {
+        vertices[i].x = mod(particlePositions[i].x - particleSystem.position.x + 10, 20) - 10;
+        vertices[i].y = mod(particlePositions[i].y - particleSystem.position.y + 10, 20) - 10;
+        vertices[i].z = mod(particlePositions[i].z - particleSystem.position.z + 10, 20) - 10;
+    }
+    particleSystem.geometry.verticesNeedUpdate = true;
+
+    function mod(n, m) {
+        let remain = n % m;
+        return remain >= 0 ? remain : remain + m;
+    }
+}
+
 
 addCube('origin', .5, '#3f3');
 
@@ -85,6 +132,8 @@ function render(time) {
         camera.aspect = canvas.clientWidth / canvas.clientHeight;
         camera.updateProjectionMatrix();
     }
+
+    updateParticles();
 
     const speed = 1.1;
     const rot = time * speed;

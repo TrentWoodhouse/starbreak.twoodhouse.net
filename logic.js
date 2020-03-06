@@ -13,7 +13,6 @@ let logic = {
         checkPlayerMoves(state);
         checkAndPerformCollisions(state);
         step(state);
-        return state;
     }
 };
 
