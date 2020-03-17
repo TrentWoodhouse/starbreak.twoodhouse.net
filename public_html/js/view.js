@@ -1,4 +1,5 @@
 import * as THREE from '/js/three.js-master/build/three.module.js';
+import UI from '/js/ui.js';
 
 const canvas = document.querySelector('#canvas');
 const renderer = new THREE.WebGLRenderer({canvas});
@@ -146,6 +147,7 @@ function render(time) {
 requestAnimationFrame(render);
 
 export function update(playerId, state) {
+    UI.updateText(playerId, state.players);
     let cubeIds = Object.keys(cubes).filter(function (id){
         return !isNaN(parseInt(id));
     });
@@ -181,7 +183,9 @@ export function update(playerId, state) {
             i++;
         }
         else {
-            addCube(playerIds[j], .1, '#fff');
+            if (playerIds[j] != playerId){
+                addCube(playerIds[j], .1, '#fff');
+            }
             updateCube(cubes[playerIds[j]], state.players[playerIds[j]], playerIds[j] == playerId);
             j++;
         }

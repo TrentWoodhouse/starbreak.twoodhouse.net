@@ -1,4 +1,5 @@
 import * as LOGIC from '/js/logic.js';
+import UI from '/js/ui.js';
 import CONFIG from './config.js';
 
 let wsUrl = CONFIG.serverHost + ':' + CONFIG.serverPort;
@@ -7,6 +8,8 @@ let websocket = new WebSocket(wsUrl);
 let interval;
 let id;
 let version;
+
+UI.debugToggled = true; //TODO implement way to use keys for this
 
 websocket.onopen = function (event) {
     console.log('Connected to ' + wsUrl);
@@ -26,8 +29,8 @@ websocket.onmessage = function (message) {
         case 'init':
             id = JSONdata.data.player.id;
             version = JSONdata.data.version;
-            console.log(`Version ${version}`);
-            console.log(`Player id is set to ${id}`);
+            UI.setVersion(version);
+            UI.addMessage(`Player id is set to ${id}`);
             break;
         case 'state':
             LOGIC.update(id, JSONdata);
@@ -40,6 +43,6 @@ websocket.onerror = function (err){
 };
 
 websocket.onclose = function () {
-    console.log('Disconnected');
+    UI.setLoading(true);
     clearInterval(interval);
 };

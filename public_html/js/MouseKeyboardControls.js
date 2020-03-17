@@ -173,7 +173,6 @@ let MouseKeyboardControls = function (domElement ) {
         else {
             this.mouseLock = false;
         }
-        console.log('Pointer lock has been set to: ' + this.mouseLock);
     };
 
     this.info = function () {

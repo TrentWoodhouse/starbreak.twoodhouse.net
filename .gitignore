@@ -72,3 +72,6 @@ fabric.properties
 
 # Node.js packages
 node_modules/
+
+# General ignored files
+ignore

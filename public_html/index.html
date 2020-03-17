@@ -6,7 +6,18 @@
 	<link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-	<canvas id="canvas"></canvas>
+	<div class="container">
+		<canvas id="canvas"></canvas>
+		<div id="info" class="click-thru">
+			<div id="crosshair" class="centered"><img src="img/crosshair.png" height="30"></div>
+			<div id="loading" class="centered" hidden><img src="img/rolling.svg" height="80"></div>
+			<div id="loading-text" class="centered center-text multiline" hidden></div>
+			<div id="debug" class="top-left multiline"></div>
+			<div id="leaderboard" class="top-right multiline"></div>
+			<div id="messages" class="bottom-left multiline"></div>
+			<div id="version" class="bottom-right faint"></div>
+		</div>
+	</div>
 	<script type="module" src="js/main.js"></script>
 </body>
 </html>

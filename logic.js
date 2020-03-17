@@ -3,7 +3,7 @@ let {Quaternion, Vector3} = require('three');
 //Player velocity variables
 const DEFAULT_VELOCITY = 10;
 const FWD_COEF = 1;
-const BWD_COEF = -1;
+const BWD_COEF = -0.7;
 const VEL_REDUCTION_COEF = 1.1;
 
 //Player angular velocity variables
