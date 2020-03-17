@@ -1,10 +1,20 @@
-let {Quaternion, Vector3, Euler} = require('three');
+let {Quaternion, Vector3} = require('three');
 
-let logic = {
+//Player velocity variables
+const DEFAULT_VELOCITY = 10;
+const FWD_COEF = 1;
+const BWD_COEF = -1;
+const VEL_REDUCTION_COEF = 1.1;
+
+//Player angular velocity variables
+const ROLL_COEF = .5;
+const ROLL_REDUCTION_COEF = 1.1;
+
+//Player mouse sensitivity variables
+const MOUSE_SENSITIVITY = .2;
+
+let LOGIC = {
     SCALE: .1,
-    MAX_PLAYER_SPEED: 10,
-    ROLL_SPEED: 2,
-    MOUSE_SENSITIVITY: .2,
     MAX_PLAYERS: 100,
     MAX_ASTEROIDS: 200,
     FIELD_RADIUS: 500,
@@ -29,42 +39,45 @@ function step(state) {
         if (!isNaN(parseInt(id))) {
             let player = state.data.players[id];
             let controls = state.userInputs[id];
-            let curQuaternion = new Quaternion(player.rotation.x, player.rotation.y, player.rotation.z, player.rotation.w);
+            let quaternion = new Quaternion(player.quaternion.x, player.quaternion.y, player.quaternion.z, player.quaternion.w);
             if (controls){
                 if(controls.upKey){
-                    let moveVector = new Vector3(0, 0, -logic.MAX_PLAYER_SPEED / logic.REFRESH_RATE).applyQuaternion(curQuaternion);
-                    player.position.x += moveVector.x;
-                    player.position.y += moveVector.y;
-                    player.position.z += moveVector.z;
+                    player.velocity += FWD_COEF;
                 }
                 if(controls.downKey){
-                    let moveVector = new Vector3(0, 0, logic.MAX_PLAYER_SPEED / logic.REFRESH_RATE).applyQuaternion(curQuaternion);
-                    player.position.x += moveVector.x;
-                    player.position.y += moveVector.y;
-                    player.position.z += moveVector.z;
+                    player.velocity += BWD_COEF;
                 }
                 if(controls.rightKey){
-                    curQuaternion.multiply(new Quaternion().setFromAxisAngle(
-                        new Vector3(0,0,1), -logic.ROLL_SPEED / logic.REFRESH_RATE));
+                    player.angularVelocity += ROLL_COEF;
                 }
                 if(controls.leftKey){
-                    curQuaternion.multiply(new Quaternion().setFromAxisAngle(
-                        new Vector3(0,0,1), logic.ROLL_SPEED / logic.REFRESH_RATE));
+                    player.angularVelocity -= ROLL_COEF;
                 }
 
-                curQuaternion.multiply(new Quaternion().setFromAxisAngle(
-                    new Vector3(0,1,0), -logic.MOUSE_SENSITIVITY * (controls.mouseXChange - controls.mouseXChangeOld) / logic.REFRESH_RATE));
-                curQuaternion.multiply(new Quaternion().setFromAxisAngle(
-                    new Vector3(1,0,0), -logic.MOUSE_SENSITIVITY * (controls.mouseYChange - controls.mouseYChangeOld) / logic.REFRESH_RATE));
+                player.velocity = (player.velocity - DEFAULT_VELOCITY) / VEL_REDUCTION_COEF + DEFAULT_VELOCITY;
+                player.angularVelocity /= ROLL_REDUCTION_COEF;
 
-                curQuaternion.normalize();
-                player.rotation.x = curQuaternion.x;
-                player.rotation.y = curQuaternion.y;
-                player.rotation.z = curQuaternion.z;
-                player.rotation.w = curQuaternion.w;
+
+                let moveVector = new Vector3(0, 0, -player.velocity / LOGIC.REFRESH_RATE).applyQuaternion(quaternion);
+                player.position.x += moveVector.x;
+                player.position.y += moveVector.y;
+                player.position.z += moveVector.z;
+
+                quaternion.multiply(new Quaternion().setFromAxisAngle(
+                    new Vector3(0,0,1), -player.angularVelocity / LOGIC.REFRESH_RATE));
+                quaternion.multiply(new Quaternion().setFromAxisAngle(
+                    new Vector3(0,1,0), -MOUSE_SENSITIVITY * (controls.mouseXChange - controls.mouseXChangeOld) / LOGIC.REFRESH_RATE));
+                quaternion.multiply(new Quaternion().setFromAxisAngle(
+                    new Vector3(1,0,0), -MOUSE_SENSITIVITY * (controls.mouseYChange - controls.mouseYChangeOld) / LOGIC.REFRESH_RATE));
+
+                quaternion.normalize();
+                player.quaternion.x = quaternion.x;
+                player.quaternion.y = quaternion.y;
+                player.quaternion.z = quaternion.z;
+                player.quaternion.w = quaternion.w;
             }
         }
     }
 }
 
-module.exports = logic;
+module.exports = LOGIC;
