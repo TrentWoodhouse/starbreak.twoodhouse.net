@@ -43,25 +43,25 @@ function addCube(id, size, color) {
 }
 
 function updateCube(cube, player, isControllingPlayer) {
-    let eulerCoords = new THREE.Euler().setFromQuaternion(
-        new THREE.Quaternion(player.rotation.x, player.rotation.y, player.rotation.z, player.rotation.w));
     if (isControllingPlayer){
         camera.position.x = player.position.x;
         camera.position.y = player.position.y;
         camera.position.z = player.position.z;
 
-        camera.rotation.x = eulerCoords.x;
-        camera.rotation.y = eulerCoords.y;
-        camera.rotation.z = eulerCoords.z;
+        camera.quaternion.x = player.quaternion.x;
+        camera.quaternion.y = player.quaternion.y;
+        camera.quaternion.z = player.quaternion.z;
+        camera.quaternion.w = player.quaternion.w;
     }
     else {
         cube.position.x = player.position.x;
         cube.position.y = player.position.y;
         cube.position.z = player.position.z;
 
-        cube.rotation.x = eulerCoords.x;
-        cube.rotation.y = eulerCoords.y;
-        cube.rotation.z = eulerCoords.z;
+        cube.quaternion.x = player.quaternion.x;
+        cube.quaternion.y = player.quaternion.y;
+        cube.quaternion.z = player.quaternion.z;
+        cube.quaternion.w = player.quaternion.w;
     }
 }
 

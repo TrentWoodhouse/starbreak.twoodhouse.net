@@ -5,14 +5,14 @@ class Object3D {
             y: 0,
             z: 0
         };
-        this.rotation = {
+        this.quaternion = {
             x: 0,
             y: 0,
             z: 0,
             w: 1
         };
         this.velocity = 0;
-        this.acceleration = 0;
+        this.angularVelocity = 0;
         this.type = 'object';
         this.solid = true;
         this.collision = true;
@@ -33,10 +33,10 @@ let models = {
         p.position.x = x;
         p.position.y = y;
         p.position.z = z;
-        p.rotation.x = rx;
-        p.rotation.y = ry;
-        p.rotation.z = rz;
-        p.rotation.w = rw;
+        p.quaternion.x = rx;
+        p.quaternion.y = ry;
+        p.quaternion.z = rz;
+        p.quaternion.w = rw;
         return p;
     },
     makeObject: function(type, x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0, rw = 0) {
@@ -45,10 +45,10 @@ let models = {
         o.position.x = x;
         o.position.y = y;
         o.position.z = z;
-        o.rotation.x = rx;
-        o.rotation.y = ry;
-        o.rotation.z = rz;
-        o.rotation.w = rw;
+        o.quaternion.x = rx;
+        o.quaternion.y = ry;
+        o.quaternion.z = rz;
+        o.quaternion.w = rw;
         return o;
     }
 };
